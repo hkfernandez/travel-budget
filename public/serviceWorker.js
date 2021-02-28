@@ -1,5 +1,5 @@
 const STATIC_CACHE_NAME = "static-cache-v1";
-const DATABASE_CACHE_NAME = "data-cache-v2";
+const DATABASE_CACHE_NAME = "data-cache-v1";
 const FILES_TO_CACHE = [
   "/",
   "./assets/scripts/index.js",
@@ -57,7 +57,7 @@ self.addEventListener("activate", function(evt) {
 self.addEventListener("fetch", function(evt) {
   if (evt.request.url.includes("/api/")) {
     evt.respondWith(
-      caches.open(DATA_CACHE_NAME).then(cache => {
+      caches.open(DATABASE_CACHE_NAME).then(cache => {
 		console.log('EVENT.REQUEST ON THE FETCH EVENT INSIDE THE SERVICE WORKER',evt.request);
         return fetch(evt.request)
           .then(response => {
