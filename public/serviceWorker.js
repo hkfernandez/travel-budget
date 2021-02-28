@@ -1,5 +1,5 @@
-const STATIC_CACHE_NAME = "static-cache";
-const DATABASE_CACHE_NAME = "data-cache";
+const STATIC_CACHE_NAME = "static-cache-v1";
+const DATABASE_CACHE_NAME = "data-cache-v2";
 const FILES_TO_CACHE = [
   "/",
   "./assets/scripts/index.js",
@@ -53,37 +53,37 @@ self.addEventListener("activate", function(evt) {
   self.clients.claim();
 });
 
-// fetch - caching of database data
-// self.addEventListener("fetch", function(evt) {
-//   if (evt.request.url.includes("/api/")) {
-//     evt.respondWith(
-//       caches.open(DATABASE_CACHE_NAME).then(cache => {
-// 		console.log('EVENT.REQUEST ON THE FETCH EVENT INSIDE THE SERVICE WORKER',evt.request);
-//         return fetch(evt.request)
-//           .then(response => {
-//             if (response.status === 200) {
-// 				console.log('RESPONSE AFTER FETCH', response);
-// 				console.log('EVENT.REQUEST.URL', evt.request.url);
-//               	cache.put(evt.request.url, response.clone());
-//             }
+// fetch - any time an call is made on the db, the service worker stores the request by the url
+self.addEventListener("fetch", function(evt) {
+  if (evt.request.url.includes("/api/")) {
+    evt.respondWith(
+      caches.open(DATA_CACHE_NAME).then(cache => {
+		console.log('EVENT.REQUEST ON THE FETCH EVENT INSIDE THE SERVICE WORKER',evt.request);
+        return fetch(evt.request)
+          .then(response => {
+            if (response.status === 200) {
+				console.log('RESPONSE AFTER FETCH', response);
+				console.log('EVENT.REQUEST.URL', evt.request.url);
+              	cache.put(evt.request.url, response.clone());
+            }
 
-//             return response;
-//           })
-//           .catch(err => {
+            return response;
+          })
+          .catch(err => {
             // Network request failed, try to get it from the cache.
-//             return cache.match(evt.request);
-//           });
-//       }).catch(err => console.log(err))
-//     );
+            return cache.match(evt.request);
+          });
+      }).catch(err => console.log(err))
+    );
 
-//     return;
-//   }
+    return;
+  }
 
-//   evt.respondWith(
-//     caches.open(STATIC_CACHE_NAME).then(cache => {
-//       return cache.match(evt.request).then(response => {
-//         return response || fetch(evt.request);
-//       });
-//     })
-//   );
-// });
+  evt.respondWith(
+    caches.open(STATIC_CACHE_NAME).then(cache => {
+      return cache.match(evt.request).then(response => {
+        return response || fetch(evt.request);
+      });
+    })
+  );
+});
