@@ -12,7 +12,7 @@ const FILES_TO_CACHE = [
 
 // install
 self.addEventListener("install", function (evt) {
-	console.log('SERVICE WORKER INSTALLED');
+	// console.log('SERVICE WORKER INSTALLED');
 
   // pre cache database data
 //   evt.waitUntil(
@@ -24,7 +24,7 @@ self.addEventListener("install", function (evt) {
   evt.waitUntil(
     caches.open(STATIC_CACHE_NAME)
 	.then((cache) => {
-		console.log('CACHING STATIC DATA');
+		// console.log('CACHING STATIC DATA');
 		cache.addAll(FILES_TO_CACHE)
 	})
 		
@@ -42,7 +42,7 @@ self.addEventListener("activate", function(evt) {
       return Promise.all(
         keyList.map(key => {
           if (key !== STATIC_CACHE_NAME && key !== DATABASE_CACHE_NAME) {
-            console.log("Removing old cache data", key);
+            // console.log("Removing old cache data", key);
             return caches.delete(key);
           }
         })
@@ -58,12 +58,12 @@ self.addEventListener("fetch", function(evt) {
   if (evt.request.url.includes("/api/")) {
     evt.respondWith(
       caches.open(DATABASE_CACHE_NAME).then(cache => {
-		console.log('EVENT.REQUEST ON THE FETCH EVENT INSIDE THE SERVICE WORKER',evt.request);
+		// console.log('EVENT REQUEST ON THE FETCH EVENT',evt.request);
         return fetch(evt.request)
           .then(response => {
             if (response.status === 200) {
-				console.log('RESPONSE AFTER FETCH', response);
-				console.log('EVENT.REQUEST.URL', evt.request.url);
+				// console.log('RESPONSE AFTER FETCH', response);
+				// console.log('EVENT.REQUEST.URL', evt.request.url);
               	cache.put(evt.request.url, response.clone());
             }
 
@@ -82,6 +82,7 @@ self.addEventListener("fetch", function(evt) {
   evt.respondWith(
     caches.open(STATIC_CACHE_NAME).then(cache => {
       return cache.match(evt.request).then(response => {
+		// console.log('SW RESPONSE TO API REQUEST', response);
         return response || fetch(evt.request);
       });
     })

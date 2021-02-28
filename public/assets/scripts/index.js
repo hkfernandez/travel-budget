@@ -66,6 +66,10 @@ function populateChart() {
 
   let ctx = document.getElementById("myChart").getContext("2d");
 
+  console.log('LABELS',labels);
+  console.log('DATA',data);
+  console.log('CXT',ctx);
+
   myChart = new Chart(ctx, {
     type: 'line',
       data: {
