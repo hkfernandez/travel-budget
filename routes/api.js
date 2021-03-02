@@ -24,7 +24,6 @@ router.post("/api/transaction/bulk", ({body}, res) => {
 router.get("/api/transaction", (req, res) => {
   Transaction.find({}).sort({date: -1})
     .then(dbTransaction => {
-		// console.log('API TRANSACTION GET ROUTE RESPONSE:', dbTransaction);
       	res.json(dbTransaction);
     })
     .catch(err => {

@@ -12,28 +12,17 @@ const FILES_TO_CACHE = [
   "https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
 ];
 
-// install
 self.addEventListener("install", function (evt) {
-	// console.log('SERVICE WORKER INSTALLED');
-
-  // pre cache database data
-//   evt.waitUntil(
-//     caches.open(DATABASE_CACHE_NAME)
-// 	.then((cache) => cache.add("/api/images"))
-//   );
     
   // pre cache all static assets
   evt.waitUntil(
     caches.open(STATIC_CACHE_NAME)
 	.then((cache) => {
-		// console.log('CACHING STATIC DATA');
 		cache.addAll(FILES_TO_CACHE)
 	})
 		
   );
 
-  // tell the browser to activate this service worker immediately once it
-  // has finished installing
   self.skipWaiting();
 });
 
@@ -60,31 +49,25 @@ self.addEventListener("fetch", function(evt) {
   if (evt.request.url.includes("/api/")) {
     evt.respondWith(
       caches.open(DATABASE_CACHE_NAME).then(cache => {
-		// console.log('EVENT REQUEST ON THE FETCH EVENT',evt.request);
         return fetch(evt.request)
           .then(response => {
             if (response.status === 200) {
-				// console.log('RESPONSE AFTER FETCH', response);
-				// console.log('EVENT.REQUEST.URL', evt.request.url);
               	cache.put(evt.request.url, response.clone());
             }
 
             return response;
           })
           .catch(err => {
-            // Network request failed, try to get it from the cache.
             return cache.match(evt.request);
           });
       }).catch(err => console.log(err))
     );
-
     return;
   }
 
   evt.respondWith(
     caches.open(STATIC_CACHE_NAME).then(cache => {
       return cache.match(evt.request).then(response => {
-		// console.log('SW RESPONSE TO API REQUEST', response);
         return response || fetch(evt.request);
       });
     })

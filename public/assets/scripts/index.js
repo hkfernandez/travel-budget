@@ -4,7 +4,6 @@ let myChart;
 
 fetch("/api/transaction")
   .then(response => {
-	// console.log('RETURNED RESPONSE FROM THE FETCH FOR ALL THE DB RECORDS');
     return response.json();
   })
   .then(data => {
@@ -66,9 +65,6 @@ function populateChart() {
 
   let ctx = document.getElementById("myChart").getContext("2d");
 
-  console.log('LABELS',labels);
-  console.log('DATA',data);
-  console.log('CXT',ctx);
 
   myChart = new Chart(ctx, {
     type: 'line',
@@ -143,7 +139,6 @@ function sendTransaction(isAdding) {
   })
   .catch(err => {
     // fetch failed, so save in indexed db
-	console.log('ATTEMPTING TO SAVE RECORD IN INDEXEDDB');
     saveRecord(transaction);
 
     // clear form
@@ -187,7 +182,6 @@ request.onerror = function(event) {
 };
 
 function saveRecord(record) {
-	console.log("SAVE RECORD FUNCTION CALLED WITH RECORD DATA:", record);
   // create a transaction on the pending db with readwrite access
   const transaction = db.transaction(["pending"], "readwrite");
 
@@ -199,11 +193,8 @@ function saveRecord(record) {
 }
 
 function checkDatabase() {
-  // open a transaction on your pending db
   const transaction = db.transaction(["pending"], "readwrite");
-  // access your pending object store
   const store = transaction.objectStore("pending");
-  // get all records from store and set to a variable
   const getAll = store.getAll();
 
   getAll.onsuccess = function() {
@@ -218,20 +209,13 @@ function checkDatabase() {
       })
       .then(response => response.json())
       .then(() => {
-        // if successful, open a transaction on your pending db
         const transaction = db.transaction(["pending"], "readwrite");
-
-        // access your pending object store
         const store = transaction.objectStore("pending");
-
-        // clear all items in your store
-		console.log('CLEARING ITEMS FROM THE INDEXEDDB');
         store.clear();
       });
     }
   };
 }
 
-// listen for app coming back online
 window.addEventListener("online", checkDatabase);
 
