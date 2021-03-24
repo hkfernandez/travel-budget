@@ -9,6 +9,7 @@ The app can be run from it’s [link here](herokulink) or you can check out the 
 
 ## Usage 
 ![Application Image](./public/assets/images/budget-tracker.png)
+
 Use is simple. Enter a short description of your expense and an amount, then select if you would like to add or subtract funds. 
 
 ## Credits
